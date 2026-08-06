@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: EmailAutomata
+  profiles:
+    default: dev
+
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-stacktrace: never
+
+emailautomata:
+  api-version: v1
+  build-version: @project.version@
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    root: INFO
+    com.emailautomata: INFO

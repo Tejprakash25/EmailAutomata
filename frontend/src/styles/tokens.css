@@ -1,0 +1,67 @@
+/*
+ * EmailAutomata design tokens — "Ink & Signal".
+ *
+ * Warm paper surfaces, deep ink text, one vermilion accent reserved strictly
+ * for outbound action and live state. Every colour, radius, and type step in
+ * the product is drawn from this file — no ad-hoc hex values in components.
+ */
+:root {
+  /* Ink — text and structure */
+  --ea-ink-900: #0e1116;
+  --ea-ink-700: #1b2029;
+  --ea-ink-500: #39404e;
+  --ea-ink-300: #6b7484;
+  --ea-ink-100: #aeb6c2;
+
+  /* Paper — surfaces */
+  --ea-paper-000: #ffffff;
+  --ea-paper-100: #faf8f4;
+  --ea-paper-200: #f2eee7;
+  --ea-line: #ded8ce;
+
+  /* Signal — outbound action only */
+  --ea-signal-500: #d14a28;
+  --ea-signal-600: #b23c1d;
+  --ea-signal-050: #fbeee9;
+
+  /* Delivery state — semantic, fixed product-wide */
+  --ea-state-pending: #a8741a;
+  --ea-state-pending-bg: #fdf3e0;
+  --ea-state-sent: #0f7b6c;
+  --ea-state-sent-bg: #e4f3f0;
+  --ea-state-failed: #b3261e;
+  --ea-state-failed-bg: #fbeae9;
+
+  /* Type */
+  --ea-font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --ea-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ea-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --ea-text-xs: 0.75rem;
+  --ea-text-sm: 0.875rem;
+  --ea-text-base: 1rem;
+  --ea-text-lg: 1.25rem;
+  --ea-text-xl: 1.75rem;
+  --ea-text-2xl: 2.5rem;
+
+  /* Space — 4px base scale */
+  --ea-space-1: 0.25rem;
+  --ea-space-2: 0.5rem;
+  --ea-space-3: 0.75rem;
+  --ea-space-4: 1rem;
+  --ea-space-6: 1.5rem;
+  --ea-space-8: 2rem;
+  --ea-space-12: 3rem;
+
+  /* Form */
+  --ea-radius-sm: 4px;
+  --ea-radius-md: 8px;
+  --ea-radius-pill: 999px;
+  --ea-shadow-sm: 0 1px 2px rgba(14, 17, 22, 0.06);
+  --ea-shadow-md: 0 4px 16px rgba(14, 17, 22, 0.08);
+
+  --ea-transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --ea-container: 1180px;
+}
