@@ -1,0 +1,33 @@
+# Local MySQL for EmailAutomata.
+#
+# Lets anyone clone the repository and have a correctly configured database in
+# one command, with no local MySQL install and no version drift between machines.
+#
+#   docker compose up -d
+#   docker compose down        # stop, keep data
+#   docker compose down -v     # stop, wipe data
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: emailautomata-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: emailautomata
+      MYSQL_USER: emailautomata
+      MYSQL_PASSWORD: emailautomata
+    ports:
+      - "3306:3306"
+    volumes:
+      - emailautomata-mysql-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  emailautomata-mysql-data:

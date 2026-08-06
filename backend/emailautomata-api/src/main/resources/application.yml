@@ -2,7 +2,34 @@ spring:
   application:
     name: EmailAutomata
   profiles:
-    default: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/emailautomata?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:emailautomata}
+    password: ${DB_PASSWORD:emailautomata}
+    hikari:
+      pool-name: emailautomata-pool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 10000
+
+  jpa:
+    # Hibernate never mutates the schema. Flyway is the single source of truth;
+    # validate fails fast at startup if entities and migrations disagree.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
 
 server:
   port: 8080
