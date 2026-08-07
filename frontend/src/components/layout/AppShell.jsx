@@ -5,8 +5,6 @@ import { useAuth } from '@/context/AuthContext';
 
 /**
  * Persistent application frame: masthead, content well, footer rule.
- * Every page renders inside this shell, so chrome stays consistent as
- * features land.
  */
 export default function AppShell({ children }) {
   const { isAuthenticated, user, logout } = useAuth();
@@ -30,41 +28,25 @@ export default function AppShell({ children }) {
             gap: 'var(--ea-space-4)',
           }}
         >
-          <Link
-            to={isAuthenticated ? '/dashboard' : '/'}
-            style={{ textDecoration: 'none' }}
-          >
+          <Link to={isAuthenticated ? '/dashboard' : '/'} style={{ textDecoration: 'none' }}>
             <Wordmark />
           </Link>
 
           {isAuthenticated ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--ea-space-4)',
-              }}
-            >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ea-space-4)' }}>
               <span
                 className="ea-mono"
-                style={{
-                  color: 'var(--ea-ink-300)',
-                  fontSize: 'var(--ea-text-xs)',
-                }}
+                data-responsive-hide-mobile
+                style={{ color: 'var(--ea-ink-300)', fontSize: 'var(--ea-text-xs)' }}
               >
                 {user?.email}
               </span>
-              <Button variant="ghost" onClick={logout}>
-                Sign out
-              </Button>
+              <Button variant="ghost" onClick={logout}>Sign out</Button>
             </div>
           ) : (
             <span
               className="ea-mono"
-              style={{
-                color: 'var(--ea-ink-300)',
-                fontSize: 'var(--ea-text-xs)',
-              }}
+              style={{ color: 'var(--ea-ink-300)', fontSize: 'var(--ea-text-xs)' }}
             >
               v0.1.0
             </span>
@@ -78,7 +60,7 @@ export default function AppShell({ children }) {
           width: '100%',
           maxWidth: 'var(--ea-container)',
           margin: '0 auto',
-          padding: 'var(--ea-space-12) var(--ea-space-6)',
+          padding: 'var(--ea-space-8) var(--ea-space-6)',
         }}
       >
         {children}

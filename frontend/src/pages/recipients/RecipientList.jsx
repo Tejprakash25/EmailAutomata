@@ -58,7 +58,7 @@ export default function RecipientList() {
     <section>
       <WorkspaceNav />
 
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 'var(--ea-space-6)' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 'var(--ea-space-6)', gap: 'var(--ea-space-4)', flexWrap: 'wrap' }}>
         <div>
           <h1 style={{ fontSize: 'var(--ea-text-xl)' }}>Recipients</h1>
           <p style={{ color: 'var(--ea-ink-300)', fontSize: 'var(--ea-text-sm)', margin: 'var(--ea-space-1) 0 0' }}>
@@ -71,11 +71,16 @@ export default function RecipientList() {
       <div style={{ display: 'grid', gap: 'var(--ea-space-6)' }}>
         <Card title="Add a recipient">
           <Alert tone="error">{bannerMessage}</Alert>
-          <form onSubmit={add} noValidate style={{ display: 'grid', gap: 'var(--ea-space-3)', gridTemplateColumns: '1fr 1fr auto', alignItems: 'start' }}>
+          <form
+            onSubmit={add}
+            noValidate
+            data-responsive-grid
+            style={{ display: 'grid', gap: 'var(--ea-space-3)', gridTemplateColumns: '1fr 1fr auto', alignItems: 'start' }}
+          >
             <FormField label="Email" name="email" type="email" value={form.email} onChange={update} error={fieldError('email')} required />
             <FormField label="Name" name="displayName" value={form.displayName} onChange={update} error={fieldError('displayName')} />
             <div style={{ paddingTop: 'calc(var(--ea-text-sm) + var(--ea-space-2) + 2px)' }}>
-              <Button type="submit" loading={adding}>Add</Button>
+              <Button type="submit" loading={adding} fullWidth>Add</Button>
             </div>
           </form>
         </Card>

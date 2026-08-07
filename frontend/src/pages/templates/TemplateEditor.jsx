@@ -32,7 +32,6 @@ export default function TemplateEditor() {
       .finally(() => setLoading(false));
   }, [id, isEdit, capture]);
 
-  // Live preview of the merge fields the server will derive on save.
   const placeholders = useMemo(
     () => PlaceholderExtractor.extract(form.subject, form.body),
     [form.subject, form.body],
@@ -77,7 +76,7 @@ export default function TemplateEditor() {
 
       <Alert tone="error">{bannerMessage}</Alert>
 
-      <div style={{ display: 'grid', gap: 'var(--ea-space-6)', gridTemplateColumns: 'minmax(0, 1fr)' }}>
+      <div data-responsive-grid style={{ display: 'grid', gap: 'var(--ea-space-6)', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)' }}>
         <Card>
           <form onSubmit={save} noValidate>
             <FormField

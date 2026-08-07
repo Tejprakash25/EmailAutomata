@@ -18,6 +18,10 @@ public interface DispatchRepository
 
     Optional<Dispatch> findByIdAndUserId(Long id, Long userId);
 
+    long countByUserId(Long userId);
+
+    long countByUserIdAndStatus(Long userId, DispatchStatus status);
+
     @Query("""
             select d from Dispatch d
             where d.status = com.emailautomata.feature.dispatch.DispatchStatus.SCHEDULED
@@ -25,4 +29,21 @@ public interface DispatchRepository
             order by d.scheduledAt asc
             """)
     List<Dispatch> findDue(@Param("now") Instant now, Pageable pageable);
+
+    /**
+     * Per-status counts for a user in one grouped query, so the dashboard's
+     * status breakdown is a single round trip rather than one count per status.
+     */
+    @Query("""
+            select d.status as status, count(d) as total
+            from Dispatch d
+            where d.userId = :userId
+            group by d.status
+            """)
+    List<StatusCount> countByStatusFor(@Param("userId") Long userId);
+
+    interface StatusCount {
+        DispatchStatus getStatus();
+        long getTotal();
+    }
 }

@@ -54,6 +54,31 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* Inputs and buttons meet the ~44px touch target on coarse pointers. */
+@media (pointer: coarse) {
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
+/*
+ * Responsive: a grid marked data-responsive-grid collapses to one column
+ * below the mobile breakpoint. Screens opt in by adding the attribute, so the
+ * behaviour is declarative and consistent rather than re-implemented per page.
+ */
+@media (max-width: 720px) {
+  [data-responsive-grid] {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-responsive-hide-mobile] {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

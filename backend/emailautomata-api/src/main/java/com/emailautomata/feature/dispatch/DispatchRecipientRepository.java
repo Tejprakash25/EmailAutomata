@@ -13,10 +13,6 @@ public interface DispatchRecipientRepository extends JpaRepository<DispatchRecip
 
     long countByDispatchId(Long dispatchId);
 
-    /**
-     * Delivery breakdown for many dispatches in one grouped query, so a history
-     * page of N rows costs a single query rather than N status lookups.
-     */
     @Query("""
             select dr.dispatchId as dispatchId,
                    sum(case when dr.deliveryStatus = com.emailautomata.feature.dispatch.DeliveryStatus.SENT then 1 else 0 end) as sentCount,
@@ -27,4 +23,27 @@ public interface DispatchRecipientRepository extends JpaRepository<DispatchRecip
             group by dr.dispatchId
             """)
     List<DeliveryBreakdown> breakdownFor(@Param("dispatchIds") Collection<Long> dispatchIds);
+
+    /**
+     * Delivery totals across all of a user's dispatches, computed in the
+     * database. Joins to the parent dispatch to scope by owner.
+     */
+    @Query("""
+            select
+                sum(case when dr.deliveryStatus = com.emailautomata.feature.dispatch.DeliveryStatus.SENT then 1 else 0 end) as sent,
+                sum(case when dr.deliveryStatus = com.emailautomata.feature.dispatch.DeliveryStatus.FAILED then 1 else 0 end) as failed,
+                sum(case when dr.deliveryStatus = com.emailautomata.feature.dispatch.DeliveryStatus.PENDING then 1 else 0 end) as pending,
+                count(dr) as total
+            from DispatchRecipient dr
+            join Dispatch d on d.id = dr.dispatchId
+            where d.userId = :userId
+            """)
+    DeliveryTotals deliveryTotalsFor(@Param("userId") Long userId);
+
+    interface DeliveryTotals {
+        Long getSent();
+        Long getFailed();
+        Long getPending();
+        Long getTotal();
+    }
 }
