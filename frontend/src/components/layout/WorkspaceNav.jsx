@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 const ITEMS = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/compose', label: 'Compose' },
+  { to: '/history', label: 'History' },
   { to: '/templates', label: 'Templates' },
   { to: '/recipients', label: 'Recipients' },
 ];
@@ -15,6 +16,7 @@ export default function WorkspaceNav() {
         gap: 'var(--ea-space-2)',
         marginBottom: 'var(--ea-space-8)',
         borderBottom: '1px solid var(--ea-line)',
+        flexWrap: 'wrap',
       }}
     >
       {ITEMS.map(({ to, label }) => (

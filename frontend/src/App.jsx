@@ -8,6 +8,7 @@ import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import Compose from '@/pages/compose/Compose';
 import DispatchDetail from '@/pages/dispatch/DispatchDetail';
+import DispatchHistory from '@/pages/history/DispatchHistory';
 import TemplateList from '@/pages/templates/TemplateList';
 import TemplateEditor from '@/pages/templates/TemplateEditor';
 import RecipientList from '@/pages/recipients/RecipientList';
@@ -37,6 +38,15 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Compose />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <DispatchHistory />
                 </ProtectedRoute>
               }
             />
