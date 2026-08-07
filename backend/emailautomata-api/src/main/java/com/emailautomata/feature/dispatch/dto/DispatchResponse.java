@@ -6,10 +6,6 @@ import com.emailautomata.feature.dispatch.DispatchRecipient;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * A dispatch with its per-recipient rows. Recipients are optional so list views
- * can omit them and detail views can include them.
- */
 public record DispatchResponse(
         Long id,
         Long templateId,
@@ -18,6 +14,7 @@ public record DispatchResponse(
         String status,
         int recipientCount,
         Instant scheduledAt,
+        Instant sentAt,
         Instant createdAt,
         List<DispatchRecipientResponse> recipients
 ) {
@@ -31,6 +28,7 @@ public record DispatchResponse(
                 d.getStatus().name(),
                 d.getRecipientCount(),
                 d.getScheduledAt(),
+                d.getSentAt(),
                 d.getCreatedAt(),
                 recipients == null ? null : recipients.stream().map(DispatchRecipientResponse::from).toList()
         );

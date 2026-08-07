@@ -15,8 +15,6 @@ spring:
       connection-timeout: 10000
 
   jpa:
-    # Hibernate never mutates the schema. Flyway is the single source of truth;
-    # validate fails fast at startup if entities and migrations disagree.
     hibernate:
       ddl-auto: validate
     open-in-view: false
@@ -31,6 +29,21 @@ spring:
     baseline-on-migrate: false
     validate-on-migrate: true
 
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 server:
   port: 8080
   error:
@@ -44,11 +57,15 @@ emailautomata:
     allowed-origins:
       - http://localhost:5173
   jwt:
-    # Dev-only fallback. Production supplies JWT_SECRET; the app refuses to
-    # start if it is shorter than 32 bytes, which HS256 requires.
     secret: ${JWT_SECRET:emailautomata-local-development-secret-key-change-me}
     issuer: emailautomata
     expiry-minutes: 720
+  mail:
+    from-address: ${MAIL_FROM:no-reply@emailautomata.local}
+    from-name: ${MAIL_FROM_NAME:EmailAutomata}
+    # Selects the active transport. 'log' (default) writes each message to the
+    # log and needs no SMTP server. Set MAIL_TRANSPORT=smtp for real delivery.
+    transport: ${MAIL_TRANSPORT:log}
 
 management:
   endpoints:

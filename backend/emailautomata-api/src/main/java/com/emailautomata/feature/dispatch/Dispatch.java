@@ -1,5 +1,6 @@
 package com.emailautomata.feature.dispatch;
 
+import com.emailautomata.core.error.IllegalStateTransitionException;
 import com.emailautomata.core.persistence.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +40,9 @@ public class Dispatch extends BaseEntity {
 
     @Column(name = "scheduled_at")
     private Instant scheduledAt;
+
+    @Column(name = "sent_at")
+    private Instant sentAt;
 
     protected Dispatch() {
     }
@@ -84,8 +88,26 @@ public class Dispatch extends BaseEntity {
         return scheduledAt;
     }
 
-    // Setters used by later commits (send, schedule). Package-scoped where the
-    // transition is owned by a sibling service, public where the controller path needs it.
+    public Instant getSentAt() {
+        return sentAt;
+    }
+
+    /** DRAFT or SCHEDULED → SENDING. Guards against re-sending a finished dispatch. */
+    public void beginSending() {
+        if (status != DispatchStatus.DRAFT && status != DispatchStatus.SCHEDULED) {
+            throw new IllegalStateTransitionException(
+                    "dispatch", status.name(), DispatchStatus.SENDING.name());
+        }
+        this.status = DispatchStatus.SENDING;
+    }
+
+    /** SENDING → SENT/FAILED, stamping completion time. */
+    public void completeSending(boolean anyDelivered, Instant at) {
+        this.status = anyDelivered ? DispatchStatus.SENT : DispatchStatus.FAILED;
+        this.sentAt = at;
+    }
+
+    // Package-scoped transitions used by the schedule path in the next commit.
     void markStatus(DispatchStatus status) {
         this.status = status;
     }

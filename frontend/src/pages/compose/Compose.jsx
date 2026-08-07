@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiClient } from '@/lib/apiClient';
 import { readPage } from '@/lib/paged';
 import { useApiError } from '@/lib/useApiError';
@@ -14,6 +15,7 @@ import StatusPill from '@/components/ui/StatusPill';
  * immediately, so unresolved recipients are visible before any send.
  */
 export default function Compose() {
+  const navigate = useNavigate();
   const [templates, setTemplates] = useState([]);
   const [recipients, setRecipients] = useState([]);
   const [templateId, setTemplateId] = useState('');
@@ -159,9 +161,11 @@ export default function Compose() {
               </p>
             )}
 
-            <p style={{ marginTop: 'var(--ea-space-4)', fontSize: 'var(--ea-text-xs)', color: 'var(--ea-ink-300)' }}>
-              Draft #{result.dispatch.id} saved. Sending and scheduling arrive in the next commits.
-            </p>
+            <div style={{ marginTop: 'var(--ea-space-4)' }}>
+              <Button onClick={() => navigate(`/dispatches/${result.dispatch.id}`)}>
+                Open draft #{result.dispatch.id}
+              </Button>
+            </div>
           </Card>
         )}
       </div>

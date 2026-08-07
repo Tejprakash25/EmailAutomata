@@ -1,6 +1,6 @@
 /**
  * Delivery-state pill. Defined once, in Commit 1, so Pending / Sent / Failed
- * look identical everywhere they appear later — history, dashboard, detail.
+ * look identical everywhere they appear — history, dashboard, detail.
  */
 const TONES = {
   pending: { fg: 'var(--ea-state-pending)', bg: 'var(--ea-state-pending-bg)' },
@@ -36,4 +36,27 @@ export default function StatusPill({ tone = 'neutral', label }) {
       {label}
     </span>
   );
+}
+
+/**
+ * Maps a backend delivery/dispatch status string onto a pill tone and label,
+ * so every screen renders the same status identically.
+ */
+export function statusTone(status) {
+  switch (status) {
+    case 'SENT':
+      return { tone: 'sent', label: 'Sent' };
+    case 'FAILED':
+      return { tone: 'failed', label: 'Failed' };
+    case 'PENDING':
+      return { tone: 'pending', label: 'Pending' };
+    case 'SENDING':
+      return { tone: 'pending', label: 'Sending' };
+    case 'SCHEDULED':
+      return { tone: 'pending', label: 'Scheduled' };
+    case 'DRAFT':
+      return { tone: 'neutral', label: 'Draft' };
+    default:
+      return { tone: 'neutral', label: status };
+  }
 }

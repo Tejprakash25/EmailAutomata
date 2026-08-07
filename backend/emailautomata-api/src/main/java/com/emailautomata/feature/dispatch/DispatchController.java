@@ -26,9 +26,11 @@ import java.net.URI;
 public class DispatchController {
 
     private final ComposeService composeService;
+    private final SendService sendService;
 
-    public DispatchController(ComposeService composeService) {
+    public DispatchController(ComposeService composeService, SendService sendService) {
         this.composeService = composeService;
+        this.sendService = sendService;
     }
 
     /**
@@ -42,6 +44,14 @@ public class DispatchController {
         ComposeResult result = composeService.compose(principal, request);
         return ApiResponses.created(result,
                 URI.create("/api/v1/dispatches/" + result.dispatch().id()));
+    }
+
+    /** Sends a draft immediately, returning the per-recipient tally. */
+    @PostMapping("/{id}/send")
+    public ResponseEntity<ApiResponse<SendResult>> send(
+            @AuthenticationPrincipal AuthenticatedUser principal,
+            @PathVariable Long id) {
+        return ApiResponses.ok(sendService.sendNow(principal, id));
     }
 
     @GetMapping

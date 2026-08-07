@@ -7,6 +7,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import Compose from '@/pages/compose/Compose';
+import DispatchDetail from '@/pages/dispatch/DispatchDetail';
 import TemplateList from '@/pages/templates/TemplateList';
 import TemplateEditor from '@/pages/templates/TemplateEditor';
 import RecipientList from '@/pages/recipients/RecipientList';
@@ -36,6 +37,15 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Compose />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/dispatches/:id"
+              element={
+                <ProtectedRoute>
+                  <DispatchDetail />
                 </ProtectedRoute>
               }
             />
