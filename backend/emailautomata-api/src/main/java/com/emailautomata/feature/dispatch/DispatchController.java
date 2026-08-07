@@ -6,6 +6,7 @@ import com.emailautomata.core.web.ApiResponses;
 import com.emailautomata.feature.dispatch.ComposeService.ComposeResult;
 import com.emailautomata.feature.dispatch.dto.ComposeRequest;
 import com.emailautomata.feature.dispatch.dto.DispatchResponse;
+import com.emailautomata.feature.dispatch.dto.ScheduleRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,16 +28,16 @@ public class DispatchController {
 
     private final ComposeService composeService;
     private final SendService sendService;
+    private final ScheduleService scheduleService;
 
-    public DispatchController(ComposeService composeService, SendService sendService) {
+    public DispatchController(ComposeService composeService,
+                              SendService sendService,
+                              ScheduleService scheduleService) {
         this.composeService = composeService;
         this.sendService = sendService;
+        this.scheduleService = scheduleService;
     }
 
-    /**
-     * Composes a draft dispatch. Returns 201 with the draft and its readiness
-     * preview, so the client can immediately warn about unresolved recipients.
-     */
     @PostMapping("/compose")
     public ResponseEntity<ApiResponse<ComposeResult>> compose(
             @AuthenticationPrincipal AuthenticatedUser principal,
@@ -46,12 +47,26 @@ public class DispatchController {
                 URI.create("/api/v1/dispatches/" + result.dispatch().id()));
     }
 
-    /** Sends a draft immediately, returning the per-recipient tally. */
     @PostMapping("/{id}/send")
     public ResponseEntity<ApiResponse<SendResult>> send(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @PathVariable Long id) {
         return ApiResponses.ok(sendService.sendNow(principal, id));
+    }
+
+    @PostMapping("/{id}/schedule")
+    public ResponseEntity<ApiResponse<DispatchResponse>> schedule(
+            @AuthenticationPrincipal AuthenticatedUser principal,
+            @PathVariable Long id,
+            @Valid @RequestBody ScheduleRequest request) {
+        return ApiResponses.ok(scheduleService.schedule(principal, id, request));
+    }
+
+    @PostMapping("/{id}/cancel-schedule")
+    public ResponseEntity<ApiResponse<DispatchResponse>> cancelSchedule(
+            @AuthenticationPrincipal AuthenticatedUser principal,
+            @PathVariable Long id) {
+        return ApiResponses.ok(scheduleService.cancel(principal, id));
     }
 
     @GetMapping

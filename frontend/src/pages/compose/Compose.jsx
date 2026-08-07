@@ -157,7 +157,7 @@ export default function Compose() {
               </>
             ) : (
               <p style={{ fontSize: 'var(--ea-text-sm)', color: 'var(--ea-state-sent)', margin: 0 }}>
-                Every recipient rendered cleanly. This draft is ready to send.
+                Every recipient rendered cleanly. This draft is ready to send or schedule.
               </p>
             )}
 

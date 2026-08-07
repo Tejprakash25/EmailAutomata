@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 import java.time.Instant;
 
@@ -34,6 +35,15 @@ public class Dispatch extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private DispatchStatus status;
+
+    /**
+     * Optimistic-lock guard. If the scheduler and a manual send both load this
+     * dispatch, the second to write fails with an OptimisticLockException and
+     * backs off, so it can never be sent twice.
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    private long version;
 
     @Column(name = "recipient_count", nullable = false)
     private int recipientCount;
@@ -80,6 +90,10 @@ public class Dispatch extends BaseEntity {
         return status;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
     public int getRecipientCount() {
         return recipientCount;
     }
@@ -92,11 +106,31 @@ public class Dispatch extends BaseEntity {
         return sentAt;
     }
 
+    /**
+     * DRAFT → SCHEDULED at the given time. The time must be in the future;
+     * a past time would be claimed by the very next poll, which is surprising.
+     */
+    public void schedule(Instant at) {
+        if (status != DispatchStatus.DRAFT) {
+            throw new IllegalStateTransitionException("dispatch", status.name(), DispatchStatus.SCHEDULED.name());
+        }
+        this.status = DispatchStatus.SCHEDULED;
+        this.scheduledAt = at;
+    }
+
+    /** SCHEDULED → DRAFT, clearing the time so the poller no longer claims it. */
+    public void cancelSchedule() {
+        if (status != DispatchStatus.SCHEDULED) {
+            throw new IllegalStateTransitionException("dispatch", status.name(), DispatchStatus.DRAFT.name());
+        }
+        this.status = DispatchStatus.DRAFT;
+        this.scheduledAt = null;
+    }
+
     /** DRAFT or SCHEDULED → SENDING. Guards against re-sending a finished dispatch. */
     public void beginSending() {
         if (status != DispatchStatus.DRAFT && status != DispatchStatus.SCHEDULED) {
-            throw new IllegalStateTransitionException(
-                    "dispatch", status.name(), DispatchStatus.SENDING.name());
+            throw new IllegalStateTransitionException("dispatch", status.name(), DispatchStatus.SENDING.name());
         }
         this.status = DispatchStatus.SENDING;
     }
@@ -105,14 +139,5 @@ public class Dispatch extends BaseEntity {
     public void completeSending(boolean anyDelivered, Instant at) {
         this.status = anyDelivered ? DispatchStatus.SENT : DispatchStatus.FAILED;
         this.sentAt = at;
-    }
-
-    // Package-scoped transitions used by the schedule path in the next commit.
-    void markStatus(DispatchStatus status) {
-        this.status = status;
-    }
-
-    void setScheduledAt(Instant scheduledAt) {
-        this.scheduledAt = scheduledAt;
     }
 }

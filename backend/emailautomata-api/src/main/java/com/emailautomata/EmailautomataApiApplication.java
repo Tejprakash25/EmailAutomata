@@ -1,9 +1,12 @@
 package com.emailautomata;
 
 import com.emailautomata.core.config.AppProperties;
+import com.emailautomata.core.config.MailProperties;
+import com.emailautomata.core.support.SchedulerProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Entry point for the EmailAutomata API.
@@ -13,7 +16,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * {@code feature}.</p>
  */
 @SpringBootApplication
-@EnableConfigurationProperties(AppProperties.class)
+@EnableScheduling
+@EnableConfigurationProperties({AppProperties.class, MailProperties.class, SchedulerProperties.class})
 public class EmailautomataApiApplication {
 
 	public static void main(String[] args) {

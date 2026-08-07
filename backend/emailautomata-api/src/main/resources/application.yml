@@ -63,9 +63,13 @@ emailautomata:
   mail:
     from-address: ${MAIL_FROM:no-reply@emailautomata.local}
     from-name: ${MAIL_FROM_NAME:EmailAutomata}
-    # Selects the active transport. 'log' (default) writes each message to the
-    # log and needs no SMTP server. Set MAIL_TRANSPORT=smtp for real delivery.
     transport: ${MAIL_TRANSPORT:log}
+  scheduler:
+    enabled: ${SCHEDULER_ENABLED:true}
+    # How often to check for due dispatches. 15s is responsive for a demo and
+    # gentle on the database.
+    poll-interval-ms: ${SCHEDULER_POLL_MS:15000}
+    batch-size: ${SCHEDULER_BATCH:25}
 
 management:
   endpoints:

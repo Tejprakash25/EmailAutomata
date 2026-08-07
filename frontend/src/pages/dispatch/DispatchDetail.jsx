@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { apiClient } from '@/lib/apiClient';
 import WorkspaceNav from '@/components/layout/WorkspaceNav';
 import Card from '@/components/ui/Card';
@@ -10,14 +10,14 @@ import StatusPill, { statusTone } from '@/components/ui/StatusPill';
 /**
  * A single dispatch with its per-recipient delivery outcomes. This is where the
  * product's promise is visible: every recipient's individual status and, on
- * failure, the reason.
+ * failure, the reason. Draft dispatches can be sent now or scheduled here.
  */
 export default function DispatchDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [dispatch, setDispatch] = useState(null);
   const [error, setError] = useState(null);
-  const [sending, setSending] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [scheduleAt, setScheduleAt] = useState('');
 
   const load = useCallback(() => {
     apiClient.get(`/dispatches/${id}`).then(setDispatch).catch((e) => setError(e.message));
@@ -25,18 +25,30 @@ export default function DispatchDetail() {
 
   useEffect(load, [load]);
 
-  const send = async () => {
+  const act = async (fn) => {
     setError(null);
-    setSending(true);
+    setBusy(true);
     try {
-      await apiClient.post(`/dispatches/${id}/send`, {});
+      await fn();
       load();
     } catch (e) {
       setError(e.message);
     } finally {
-      setSending(false);
+      setBusy(false);
     }
   };
+
+  const send = () => act(() => apiClient.post(`/dispatches/${id}/send`, {}));
+
+  const schedule = () =>
+    act(() =>
+      apiClient.post(`/dispatches/${id}/schedule`, {
+        // datetime-local yields local wall time; convert to an ISO instant.
+        scheduledAt: new Date(scheduleAt).toISOString(),
+      }),
+    );
+
+  const cancelSchedule = () => act(() => apiClient.post(`/dispatches/${id}/cancel-schedule`, {}));
 
   if (!dispatch) {
     return (
@@ -48,7 +60,8 @@ export default function DispatchDetail() {
   }
 
   const pill = statusTone(dispatch.status);
-  const canSend = dispatch.status === 'DRAFT';
+  const isDraft = dispatch.status === 'DRAFT';
+  const isScheduled = dispatch.status === 'SCHEDULED';
 
   return (
     <section>
@@ -59,20 +72,52 @@ export default function DispatchDetail() {
           <h1 style={{ fontSize: 'var(--ea-text-xl)' }}>Dispatch #{dispatch.id}</h1>
           <StatusPill tone={pill.tone} label={pill.label} />
         </div>
-        {canSend && <Button onClick={send} loading={sending}>Send now</Button>}
+        {isDraft && <Button onClick={send} loading={busy}>Send now</Button>}
       </div>
 
       {error && <Alert tone="error">{error}</Alert>}
 
-      <Card title="Message">
-        <p style={{ margin: '0 0 var(--ea-space-2)' }}>
-          <span style={{ color: 'var(--ea-ink-300)', fontSize: 'var(--ea-text-sm)' }}>Subject template: </span>
-          <span className="ea-mono">{dispatch.subject}</span>
-        </p>
-        <p style={{ margin: 0, color: 'var(--ea-ink-500)', fontSize: 'var(--ea-text-sm)', whiteSpace: 'pre-wrap' }}>
-          {dispatch.body}
-        </p>
-      </Card>
+      {isScheduled && (
+        <Card title="Scheduled">
+          <p style={{ margin: '0 0 var(--ea-space-3)', fontSize: 'var(--ea-text-sm)', color: 'var(--ea-ink-500)' }}>
+            This dispatch will send automatically at{' '}
+            <strong>{new Date(dispatch.scheduledAt).toLocaleString()}</strong>.
+          </p>
+          <Button variant="ghost" onClick={cancelSchedule} loading={busy}>Cancel schedule</Button>
+        </Card>
+      )}
+
+      {isDraft && (
+        <Card title="Schedule for later">
+          <div style={{ display: 'flex', gap: 'var(--ea-space-3)', alignItems: 'center', flexWrap: 'wrap' }}>
+            <input
+              type="datetime-local"
+              value={scheduleAt}
+              onChange={(e) => setScheduleAt(e.target.value)}
+              style={{
+                padding: 'var(--ea-space-3)', fontFamily: 'var(--ea-font-ui)', fontSize: 'var(--ea-text-base)',
+                border: '1px solid var(--ea-line)', borderRadius: 'var(--ea-radius-sm)',
+                backgroundColor: 'var(--ea-paper-000)',
+              }}
+            />
+            <Button variant="secondary" onClick={schedule} disabled={!scheduleAt || busy}>
+              Schedule
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      <div style={{ marginTop: 'var(--ea-space-6)' }}>
+        <Card title="Message">
+          <p style={{ margin: '0 0 var(--ea-space-2)' }}>
+            <span style={{ color: 'var(--ea-ink-300)', fontSize: 'var(--ea-text-sm)' }}>Subject template: </span>
+            <span className="ea-mono">{dispatch.subject}</span>
+          </p>
+          <p style={{ margin: 0, color: 'var(--ea-ink-500)', fontSize: 'var(--ea-text-sm)', whiteSpace: 'pre-wrap' }}>
+            {dispatch.body}
+          </p>
+        </Card>
+      </div>
 
       <div style={{ marginTop: 'var(--ea-space-6)' }}>
         <Card title={`Recipients — ${dispatch.recipientCount}`} padded={false}>

@@ -19,15 +19,15 @@ import java.util.regex.Pattern;
  * message through the active {@link MailTransport}, and records every outcome
  * individually.
  *
- * <p>The transport is injected as an interface, so this service is identical
- * whether it is logging messages in dev or hitting SMTP in production.</p>
+ * <p>The same {@link #send(Dispatch)} core is used by both the instant-send
+ * endpoint and the scheduler, so a scheduled send behaves identically to a
+ * manual one — one code path, one set of guarantees.</p>
  */
 @Service
 public class SendService {
 
     private static final Logger log = LoggerFactory.getLogger(SendService.class);
 
-    // Detects an unresolved placeholder surviving in rendered content.
     private static final Pattern UNRESOLVED = Pattern.compile("\\{\\{\\s*[a-zA-Z][a-zA-Z0-9_]*\\s*}}");
 
     private final DispatchRepository dispatches;
@@ -43,21 +43,26 @@ public class SendService {
     }
 
     /**
-     * Sends the dispatch immediately.
-     *
-     * <p>Runs in one transaction. Each recipient's delivery is attempted
-     * independently: a transport failure is caught and recorded against that
-     * recipient, never propagated, so the batch always completes and the record
-     * reflects reality.</p>
+     * Sends a dispatch the caller owns, immediately.
      */
     @Transactional
     public SendResult sendNow(AuthenticatedUser principal, Long dispatchId) {
         Dispatch dispatch = dispatches.findByIdAndUserId(dispatchId, principal.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Dispatch", dispatchId));
+        return send(dispatch);
+    }
 
+    /**
+     * The shared send core. Assumes the dispatch has already been loaded and
+     * that the caller is authorised (manual path checks ownership; scheduler
+     * operates system-wide). Runs in its own transaction so the scheduler can
+     * process each due dispatch independently.
+     */
+    @Transactional
+    public SendResult send(Dispatch dispatch) {
         dispatch.beginSending(); // throws IllegalStateTransition if already sent
 
-        List<DispatchRecipient> rows = dispatchRecipients.findByDispatchIdOrderByIdAsc(dispatchId);
+        List<DispatchRecipient> rows = dispatchRecipients.findByDispatchIdOrderByIdAsc(dispatch.getId());
         int sent = 0;
         int failed = 0;
 
@@ -87,12 +92,11 @@ public class SendService {
         dispatches.save(dispatch);
 
         log.info("Dispatch {} sent via {}: {} delivered, {} failed",
-                dispatchId, transport.name(), sent, failed);
+                dispatch.getId(), transport.name(), sent, failed);
 
-        return new SendResult(dispatchId, dispatch.getStatus().name(), rows.size(), sent, failed);
+        return new SendResult(dispatch.getId(), dispatch.getStatus().name(), rows.size(), sent, failed);
     }
 
-    /** Returns the first surviving {@code {{placeholder}}} in either field, or null. */
     private String firstUnresolved(String subject, String body) {
         var m = UNRESOLVED.matcher(subject);
         if (m.find()) return m.group();
