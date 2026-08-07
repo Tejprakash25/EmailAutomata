@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import WorkspaceNav from '@/components/layout/WorkspaceNav';
 
 /**
  * Placeholder home for an authenticated session. Replaced with real statistics
@@ -9,6 +10,8 @@ export default function Dashboard() {
 
   return (
     <section>
+      <WorkspaceNav />
+
       <p
         className="ea-mono"
         style={{

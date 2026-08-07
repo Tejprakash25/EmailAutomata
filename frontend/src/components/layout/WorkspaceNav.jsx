@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 const ITEMS = [
   { to: '/dashboard', label: 'Dashboard' },
+  { to: '/compose', label: 'Compose' },
   { to: '/templates', label: 'Templates' },
   { to: '/recipients', label: 'Recipients' },
 ];
