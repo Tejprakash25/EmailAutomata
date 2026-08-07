@@ -75,7 +75,7 @@ export default function AppShell({ children }) {
           fontSize: 'var(--ea-text-sm)',
         }}
       >
-        EmailAutomata — compose, schedule, account for every send.
+        EmailAutomata — by Tejprakash
       </footer>
     </div>
   );

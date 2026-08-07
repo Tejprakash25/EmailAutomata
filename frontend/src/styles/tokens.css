@@ -1,36 +1,39 @@
 /*
- * EmailAutomata design tokens — "Ink & Signal".
+ * EmailAutomata design tokens — "Signal & Sky".
  *
- * Warm paper surfaces, deep ink text, one vermilion accent reserved strictly
- * for outbound action and live state. Every colour, radius, and type step in
- * the product is drawn from this file — no ad-hoc hex values in components.
+ * Cool white surfaces, deep ink text, one confident blue accent reserved
+ * strictly for outbound action and live state, with a cyan secondary signal.
+ * Every colour, radius, and type step in the product is drawn from this file —
+ * no ad-hoc hex values in components.
  */
 :root {
   /* Ink — text and structure */
-  --ea-ink-900: #0e1116;
-  --ea-ink-700: #1b2029;
-  --ea-ink-500: #39404e;
-  --ea-ink-300: #6b7484;
-  --ea-ink-100: #aeb6c2;
+  --ea-ink-900: #0b1220;
+  --ea-ink-700: #1b2432;
+  --ea-ink-500: #3a4658;
+  --ea-ink-300: #6b7688;
+  --ea-ink-100: #aab4c2;
 
-  /* Paper — surfaces */
+  /* Paper — cool white surfaces */
   --ea-paper-000: #ffffff;
-  --ea-paper-100: #faf8f4;
-  --ea-paper-200: #f2eee7;
-  --ea-line: #ded8ce;
+  --ea-paper-100: #f4f8fb;
+  --ea-paper-200: #e8eff5;
+  --ea-line: #d6e1ea;
 
-  /* Signal — outbound action only */
-  --ea-signal-500: #d14a28;
-  --ea-signal-600: #b23c1d;
-  --ea-signal-050: #fbeee9;
+  /* Signal — outbound action only (blue), with a cyan companion */
+  --ea-signal-500: #1d6ff2;
+  --ea-signal-600: #1558c8;
+  --ea-signal-050: #e7f1fe;
+  --ea-cyan-500: #06b6d4;
+  --ea-cyan-050: #e3f8fc;
 
-  /* Delivery state — semantic, fixed product-wide */
-  --ea-state-pending: #a8741a;
-  --ea-state-pending-bg: #fdf3e0;
-  --ea-state-sent: #0f7b6c;
-  --ea-state-sent-bg: #e4f3f0;
-  --ea-state-failed: #b3261e;
-  --ea-state-failed-bg: #fbeae9;
+  /* Delivery state — semantic, fixed product-wide, tuned to the cool palette */
+  --ea-state-pending: #b06f00;
+  --ea-state-pending-bg: #fdf1dc;
+  --ea-state-sent: #0e8f7e;
+  --ea-state-sent-bg: #d9f5f0;
+  --ea-state-failed: #d13a3a;
+  --ea-state-failed-bg: #fce8e8;
 
   /* Type */
   --ea-font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
@@ -57,8 +60,8 @@
   --ea-radius-sm: 4px;
   --ea-radius-md: 8px;
   --ea-radius-pill: 999px;
-  --ea-shadow-sm: 0 1px 2px rgba(14, 17, 22, 0.06);
-  --ea-shadow-md: 0 4px 16px rgba(14, 17, 22, 0.08);
+  --ea-shadow-sm: 0 1px 2px rgba(11, 18, 32, 0.06);
+  --ea-shadow-md: 0 4px 16px rgba(11, 18, 32, 0.08);
 
   --ea-transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
 
