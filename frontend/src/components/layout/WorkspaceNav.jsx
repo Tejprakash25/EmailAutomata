@@ -1,12 +1,9 @@
 import { NavLink } from 'react-router-dom';
 
-/**
- * Primary navigation for the authenticated workspace. Items are added as their
- * features land; the active link takes the signal accent.
- */
 const ITEMS = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/templates', label: 'Templates' },
+  { to: '/recipients', label: 'Recipients' },
 ];
 
 export default function WorkspaceNav() {

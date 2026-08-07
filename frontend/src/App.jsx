@@ -8,6 +8,8 @@ import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import TemplateList from '@/pages/templates/TemplateList';
 import TemplateEditor from '@/pages/templates/TemplateEditor';
+import RecipientList from '@/pages/recipients/RecipientList';
+import RecipientImport from '@/pages/recipients/RecipientImport';
 
 export default function App() {
   return (
@@ -27,6 +29,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/templates"
               element={
@@ -48,6 +51,23 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <TemplateEditor />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/recipients"
+              element={
+                <ProtectedRoute>
+                  <RecipientList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/recipients/import"
+              element={
+                <ProtectedRoute>
+                  <RecipientImport />
                 </ProtectedRoute>
               }
             />
