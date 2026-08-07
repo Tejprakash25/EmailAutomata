@@ -43,6 +43,12 @@ emailautomata:
   cors:
     allowed-origins:
       - http://localhost:5173
+  jwt:
+    # Dev-only fallback. Production supplies JWT_SECRET; the app refuses to
+    # start if it is shorter than 32 bytes, which HS256 requires.
+    secret: ${JWT_SECRET:emailautomata-local-development-secret-key-change-me}
+    issuer: emailautomata
+    expiry-minutes: 720
 
 management:
   endpoints:

@@ -1,11 +1,16 @@
+import { Link } from 'react-router-dom';
 import Wordmark from '@/components/brand/Wordmark';
+import Button from '@/components/ui/Button';
+import { useAuth } from '@/context/AuthContext';
 
 /**
  * Persistent application frame: masthead, content well, footer rule.
- * Every future page renders inside this shell, so chrome stays consistent
- * as features land.
+ * Every page renders inside this shell, so chrome stays consistent as
+ * features land.
  */
 export default function AppShell({ children }) {
+  const { isAuthenticated, user, logout } = useAuth();
+
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
       <header
@@ -25,13 +30,45 @@ export default function AppShell({ children }) {
             gap: 'var(--ea-space-4)',
           }}
         >
-          <Wordmark />
-          <span
-            className="ea-mono"
-            style={{ color: 'var(--ea-ink-300)', fontSize: 'var(--ea-text-xs)' }}
+          <Link
+            to={isAuthenticated ? '/dashboard' : '/'}
+            style={{ textDecoration: 'none' }}
           >
-            v0.1.0
-          </span>
+            <Wordmark />
+          </Link>
+
+          {isAuthenticated ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--ea-space-4)',
+              }}
+            >
+              <span
+                className="ea-mono"
+                style={{
+                  color: 'var(--ea-ink-300)',
+                  fontSize: 'var(--ea-text-xs)',
+                }}
+              >
+                {user?.email}
+              </span>
+              <Button variant="ghost" onClick={logout}>
+                Sign out
+              </Button>
+            </div>
+          ) : (
+            <span
+              className="ea-mono"
+              style={{
+                color: 'var(--ea-ink-300)',
+                fontSize: 'var(--ea-text-xs)',
+              }}
+            >
+              v0.1.0
+            </span>
+          )}
         </div>
       </header>
 
